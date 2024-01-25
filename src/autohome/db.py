@@ -1,12 +1,12 @@
+from autohome.env import config
+import dj_database_url
 
-DATABASES = {
-  'default': {
-    'ENGINE': 'django.db.backends.postgresql',
-    'NAME': 'bucket',
-    'USER': 'chuckhalliday',
-    'PASSWORD': 'qirhWB4Zb5xO',
-    'HOST': 'ep-nameless-silence-a61mntpq.us-west-2.aws.neon.tech',
-    'PORT': '5432',
-    'OPTIONS': {'sslmode': 'require'},
-  }
-}
+DATABASE_URL= config("DATABASE_URL", default=None)
+if DATABASE_URL is not None:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True
+        )
+    }
