@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="flex flex-col md:flex-row">
+    <div class="w-full md:w-3/4 space-y-4">
+        <!-- main content -->
+        <h2 class="text-4xl font-bold dark:text-white">{{ object.name }}</h2>
+
+        <p class="font-light text-gray-500 dark:text-gray-400">Harness the power of modern AI and interface with the best publicly offered tools, specifically tailored to your unique vehicle</p>
+        <p class="font-light text-gray-500 dark:text-gray-400">Also features popular and useful auto prompts to assist you in asking the most important questions</p>
+    </div>
+
+
+    <div class="w-full md:w-1/4">
+        <!-- sidebar -->
+        {% if form %}
+        <h3>Update Product</h3>
+        <form method="POST" action=".">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit" class="btn-submit">Submit</button>
+        </form>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}
