@@ -1,6 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
-
+from products.forms import VehicleForm
 
 def home_view(request):
-    return render(request, "home.html")
+    context = {}
+    form = VehicleForm(request.POST or None)
+    if form.is_valid():
+        obj = form.save(commit=False)
+        obj.save()
+        return redirect('/products/')
+    context['form'] = form
+    return render(request, "home.html", context)
