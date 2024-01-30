@@ -1,6 +1,10 @@
 from django.db import models
+from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from django.utils import timezone
+
+PROTECTED_MEDIA_ROOT = settings.PROTECTED_MEDIA_ROOT
+protected_storage = FileSystemStorage(location=str(PROTECTED_MEDIA_ROOT))
 
 # Create your models here.
 
@@ -33,9 +37,21 @@ class Vehicle(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, default=1, on_delete=models.CASCADE)
     vin = models.CharField(max_length=17)
     handle = models.SlugField(unique=True) # slug
-    image = models.ImageField(upload_to="products/", blank=True, null=True)
     product = models.ForeignKey(Product, default=3, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
 
     def save(self, *args, **kwargs):
         self.handle = self.vin
         super().save(*args, **kwargs)
+
+def handle_vehicle_attachment_upload(instance, filename):
+    return f"products/{instance.vehicle.handle}/attachments/{filename}"
+
+class VehicleAttachment(models.Model):
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    file = models.FileField(upload_to="attachments/", blank=True, null=True)
+    storage = protected_storage
+    timestamp = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
