@@ -8,6 +8,7 @@ def home_view(request):
     if form.is_valid():
         obj = form.save(commit=False)
         obj.save()
+        request.session['vehicle_id'] = obj.vin
         return redirect('/products/')
     context['form'] = form
     return render(request, "home.html", context)

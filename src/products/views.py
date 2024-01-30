@@ -18,15 +18,24 @@ def product_create_view(request):
     return render(request, 'products/create.html', context)
 
 def product_list_view(request):
-    object_list = Product.objects.all()
-    return render(request, "products/list.html", {"object_list": object_list})
+    object_list = Product.objects.exclude(pk=3)
+    vin = request.session.get('vehicle_id')
+    context = {
+        "object_list": object_list,
+        "vin": vin  # Pass obj_id to template context
+    }
+    return render(request, "products/list.html", context)
 
 def product_detail_view(request, handle=None):
     obj = get_object_or_404(Product, handle=handle)
+    vin = request.session.get('vehicle_id')
     is_owner = False
     if request.user.is_authenticated:
         is_owner = obj.user == request.user
-    context = {"object": obj}
+    context = {
+        "object": obj,
+        "vin": vin
+        }
     if is_owner:
         form = ProductUpdateForm(request.POST or None, request.FILES or None, instance=obj)
         if form.is_valid():
