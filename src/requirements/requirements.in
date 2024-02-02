@@ -4,3 +4,4 @@ dj-database-url
 python-decouple
 Pillow
 requests
+PyPDF2

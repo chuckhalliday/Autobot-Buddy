@@ -22,6 +22,8 @@ pillow==10.2.0
     # via -r src/requirements/requirements.in
 psycopg2==2.9.9
     # via -r src/requirements/requirements.in
+pypdf2==3.0.1
+    # via -r src/requirements/requirements.in
 python-decouple==3.8
     # via -r src/requirements/requirements.in
 requests==2.31.0

@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here.
 from .forms import ProductForm, ProductUpdateForm
 from .models import Product
-from .queries import fetch_data
+from .queries import fetch_data, extract_text_from_url_pdf
 
 def product_create_view(request):
     context = {}
@@ -22,6 +22,9 @@ def product_list_view(request):
     object_list = Product.objects.exclude(pk=3)
     vin = request.session.get('vehicle_id')
     data = fetch_data(vin)
+    url = f"https://cdn.dealereprocess.org/cdn/servicemanuals/{data['make']}/{data['year']}-{data['model']}.pdf"
+    print(url)
+    extract_text_from_url_pdf(url)
     context = {
         "object_list": object_list,
         "vin": vin,
