@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here.
 from .forms import ProductForm, ProductUpdateForm
 from .models import Product
+from .queries import fetch_data
 
 def product_create_view(request):
     context = {}
@@ -20,9 +21,11 @@ def product_create_view(request):
 def product_list_view(request):
     object_list = Product.objects.exclude(pk=3)
     vin = request.session.get('vehicle_id')
+    data = fetch_data(vin)
     context = {
         "object_list": object_list,
-        "vin": vin  # Pass obj_id to template context
+        "vin": vin,
+        "data": data
     }
     return render(request, "products/list.html", context)
 
