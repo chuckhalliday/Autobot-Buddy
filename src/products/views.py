@@ -24,7 +24,7 @@ def product_list_view(request):
     data = fetch_data(vin)
     url = f"https://cdn.dealereprocess.org/cdn/servicemanuals/{data['make']}/{data['year']}-{data['model']}.pdf"
     print(url)
-    extract_text_from_url_pdf(url)
+    extract_text_from_url_pdf(url, data['vehicle_handle'])
     context = {
         "object_list": object_list,
         "vin": vin,

@@ -21,7 +21,8 @@ def fetch_data(vin):
             model = vehicle_object[9].get("Value", "").lower()
             
             return {
-                "vehicle_model": f"{year} {make} {model} {trim}",
+                "vehicle_model": f"{year} {make.capitalize()} {model.capitalize()} {trim.capitalize()}",
+                "vehicle_handle": f"{year}{make}{model}",
                 "year": year,
                 "make": make,
                 "model": model,
@@ -33,7 +34,7 @@ def fetch_data(vin):
     
     return None
 
-def extract_text_from_url_pdf(url: str):
+def extract_text_from_url_pdf(url: str, vehicle: str):
     # Download the PDF content from the URL
     response = requests.get(url)
 
@@ -58,7 +59,7 @@ def extract_text_from_url_pdf(url: str):
 
         # Specify the file path for the new text file
         # Adjust this path as needed
-        file_path = "extracted_text.txt"
+        file_path = f"{vehicle}.txt"
 
         # Write the content to the text file
         with open(file_path, "w", encoding="utf-8") as file:
