@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product, Vehicle
+from .models import Product, Vehicle, VehicleAttachment
 
 input_css_class = "form-control"
 
@@ -18,6 +18,7 @@ class VehicleForm(forms.ModelForm):
         if len(vin) != 17:
             raise forms.ValidationError("VIN must be exactly 17 characters long.")
         return vin
+    
 
 class ProductForm(forms.ModelForm):
     class Meta:

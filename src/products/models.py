@@ -49,9 +49,12 @@ class Vehicle(models.Model):
 def handle_vehicle_attachment_upload(instance, filename):
     return f"products/{instance.vehicle.handle}/attachments/{filename}"
 
+
 class VehicleAttachment(models.Model):
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
-    file = models.FileField(upload_to="attachments/", blank=True, null=True)
-    storage = protected_storage
+    file = models.FileField(upload_to=handle_vehicle_attachment_upload, storage=protected_storage)
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)

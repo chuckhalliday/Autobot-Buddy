@@ -2,6 +2,7 @@ import requests
 import json
 import io
 from PyPDF2 import PdfReader
+from products.models import VehicleAttachment
 
 def fetch_data(vin):
     url = f"https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/{vin}*BA?format=json"
@@ -34,35 +35,32 @@ def fetch_data(vin):
     
     return None
 
-def extract_text_from_url_pdf(url: str, vehicle: str):
+def extract_text_from_url_pdf(url: str, vehicle: str, obj: str):
     # Download the PDF content from the URL
     response = requests.get(url)
 
     # Check if the request was successful (status code 200)
     if response.status_code == 200:
-        # Create a file-like object from the content
         binary_content = response.content
 
-    # Convert binary content to a BytesIO object
         pdf_content = io.BytesIO(binary_content)
-        # Use PyPDF2 to read the PDF content
-        reader = PdfReader(pdf_content)
+        with pdf_content as pdf_file:
+            reader = PdfReader(pdf_file)
+            number_of_pages = len(reader.pages)
+            
+            pdf_text = ""
+            for i in range(number_of_pages):
+                page = reader.pages[i]
+                pdf_text += page.extract_text()
+                pdf_text += "\n"
 
-        number_of_pages = len(reader.pages)
+        file_name = f"{vehicle}.txt"
+        if not VehicleAttachment.objects.filter(file=file_name).exists():
+            attachment_instance = VehicleAttachment(vehicle=obj)
+            attachment_instance.file.save(file_name, io.BytesIO(pdf_text.encode('utf-8')))
+        else:
+            print(f"File '{file_name}' already exists. Skipping creation.")
 
-        pdf_text = ""
 
-        for i in range(number_of_pages):
-            page = reader.pages[i]
-            pdf_text += page.extract_text()
-            pdf_text += "\n"
-
-        # Specify the file path for the new text file
-        # Adjust this path as needed
-        file_path = f"{vehicle}.txt"
-
-        # Write the content to the text file
-        with open(file_path, "w", encoding="utf-8") as file:
-            file.write(pdf_text)
     else:
         print(f"Failed to download PDF. Status code: {response.status_code}")
