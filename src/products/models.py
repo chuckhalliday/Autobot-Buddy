@@ -9,8 +9,8 @@ protected_storage = FileSystemStorage(location=str(PROTECTED_MEDIA_ROOT))
 # Create your models here.
 
 class Product(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, default=1, on_delete=models.CASCADE)
     # stripe_product_id =
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, default=1, on_delete=models.CASCADE)
     name = models.CharField(max_length=120)
     handle = models.SlugField(unique=True) # slug
     price = models.DecimalField(max_digits=10, decimal_places=2, default=9.95)

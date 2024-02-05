@@ -30,12 +30,13 @@ class ProductForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = input_css_class
 
-class ProductUpdateForm(forms.ModelForm):
+class VehicleUpdateForm(forms.ModelForm):
     class Meta:
-        model = Product
-        fields = ['name', 'handle', 'price']
+        model = Vehicle
+        fields = ['model']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = input_css_class
+            self.fields['model'].label = 'Vehicle'

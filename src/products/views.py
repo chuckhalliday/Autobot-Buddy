@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
 # Create your views here.
-from .forms import ProductForm, ProductUpdateForm
-from .models import Product
+from .forms import ProductForm, VehicleUpdateForm
+from .models import Product, Vehicle
 
 def product_create_view(request):
     context = {}
@@ -29,20 +29,26 @@ def product_list_view(request):
     return render(request, "products/list.html", context)
 
 def product_detail_view(request, handle=None):
-    obj = get_object_or_404(Product, handle=handle)
     vin = request.session.get('vehicle_id')
+    obj = get_object_or_404(Product, handle=handle)
+    vehicle = get_object_or_404(Vehicle, handle=vin)
     is_owner = False
     if request.user.is_authenticated:
-        is_owner = obj.user == request.user
+        is_owner = request.user.purchase_set.all().filter(product=obj, completed=True).exists()
     context = {
         "object": obj,
         "vin": vin
         }
-    if is_owner:
-        form = ProductUpdateForm(request.POST or None, request.FILES or None, instance=obj)
+    if not is_owner:
+        form = VehicleUpdateForm(request.POST or None, instance=vehicle)
         if form.is_valid():
-            obj = form.save(commit=False)
-            obj.save()
-            # return redirect('/products/create/')
+            vehicle = form.save(commit=False)
+            vehicle.product = obj
+            vehicle.save()
+            return redirect('/products/checkout/')
         context['form'] = form
     return render(request, 'products/detail.html', context)
+
+def checkout(request):
+    context = {}
+    return render(request, 'products/checkout.html', context)

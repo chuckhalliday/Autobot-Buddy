@@ -27,7 +27,7 @@
 
         <!-- sidebar -->
         {% if form %}
-        <h3>Update Product</h3>
+        <h3>Purchase this option:</h3>
         <form method="POST" action="." enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
