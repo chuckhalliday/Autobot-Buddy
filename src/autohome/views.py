@@ -7,9 +7,10 @@ def home_view(request):
     context = {}
     form = VehicleForm(request.POST or None)
     if form.is_valid():
+        data = fetch_data(form.cleaned_data['vin'])
         obj = form.save(commit=False)
+        obj.model = data['vehicle_model']
         obj.save()
-        data = fetch_data(obj.vin)
         url = f"https://cdn.dealereprocess.org/cdn/servicemanuals/{data['make']}/{data['year']}-{data['model']}.pdf"
         extract_text_from_url_pdf(url, data['vehicle_handle'], obj)
         request.session['vehicle_id'] = obj.vin

@@ -36,6 +36,7 @@ class Product(models.Model):
 class Vehicle(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, default=1, on_delete=models.CASCADE)
     vin = models.CharField(max_length=17)
+    model = models.CharField(max_length=100)
     handle = models.SlugField(unique=True) # slug
     product = models.ForeignKey(Product, default=3, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -47,12 +48,18 @@ class Vehicle(models.Model):
         super().save(*args, **kwargs)
 
 def handle_vehicle_attachment_upload(instance, filename):
-    return f"products/{instance.vehicle.handle}/attachments/{filename}"
+    return f"manuals/{filename}"
 
+class File(models.Model):
+    name = models.CharField(max_length=100)
+    file = models.FileField(upload_to=handle_vehicle_attachment_upload, storage=protected_storage)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
 class VehicleAttachment(models.Model):
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
-    file = models.FileField(upload_to=handle_vehicle_attachment_upload, storage=protected_storage)
+    file = models.ForeignKey(File, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
