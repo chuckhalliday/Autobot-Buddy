@@ -13,6 +13,7 @@ class Product(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, default=1, on_delete=models.CASCADE)
     name = models.CharField(max_length=120)
     handle = models.SlugField(unique=True) # slug
+    model = models.CharField(max_length=20, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=9.95)
     og_price = models.DecimalField(max_digits=10, decimal_places=2, default=9.95)
     # stripe_price_id =
@@ -48,11 +49,15 @@ class Vehicle(models.Model):
         super().save(*args, **kwargs)
 
 def handle_vehicle_attachment_upload(instance, filename):
-    return f"manuals/{filename}"
+    if instance.filetype == 'txt':
+        return f"manuals/{filename}"
+    elif instance.filetype == 'json':
+        return f"embeddings/{filename}"
 
 class File(models.Model):
     name = models.CharField(max_length=100)
     file = models.FileField(upload_to=handle_vehicle_attachment_upload, storage=protected_storage)
+    filetype = models.CharField(max_length=6)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

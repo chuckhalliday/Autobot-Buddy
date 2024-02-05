@@ -51,4 +51,7 @@ def product_detail_view(request, handle=None):
 
 def checkout(request):
     context = {}
+    is_owner = True
+    if is_owner:
+        return redirect('/purchases/')
     return render(request, 'products/checkout.html', context)

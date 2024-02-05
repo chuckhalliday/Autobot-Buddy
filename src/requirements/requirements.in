@@ -5,3 +5,6 @@ python-decouple
 Pillow
 requests
 PyPDF2
+langchain
+openai
+python-dotenv
