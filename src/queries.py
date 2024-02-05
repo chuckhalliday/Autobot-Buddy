@@ -51,7 +51,7 @@ def fetch_data(vin):
 
 def extract_text_from_url_pdf(url: str, vehicle: str, obj: str):
     file_name = f"{vehicle}.txt"
-    file_instance = File.objects.filter(file=file_name).first()
+    file_instance = File.objects.filter(name=file_name).first()
 
     if not file_instance:
         
@@ -76,8 +76,7 @@ def extract_text_from_url_pdf(url: str, vehicle: str, obj: str):
         else:
             print(f"Failed to download PDF. Status code: {response.status_code}")
 
-    
-        file_instance = File(name=vehicle, filetype='txt')
+        file_instance = File(name=file_name, filetype='txt')
         file_instance.file.save(file_name, io.BytesIO(pdf_text.encode('utf-8')))
         attachment_instance = VehicleAttachment(vehicle=obj, file=file_instance)
         attachment_instance.save()
@@ -91,7 +90,7 @@ def extract_text_from_url_pdf(url: str, vehicle: str, obj: str):
 
 def create_embeddings(file_path: str, vehicle: str, obj: str):
     file_name = f"{vehicle}.json"
-    file_instance = File.objects.filter(file=file_name).first()
+    file_instance = File.objects.filter(name=file_name).first()
 
     if not file_instance:
     
@@ -127,7 +126,7 @@ def create_embeddings(file_path: str, vehicle: str, obj: str):
     # Convert the JSON object to a formatted JSON string
         json_object = json.dumps(embedding_json, indent=4)
 
-        file_instance = File(name=vehicle, filetype='json')
+        file_instance = File(name=file_name, filetype='json')
         file_instance.file.save(file_name, io.BytesIO(json_object.encode('utf-8')))
         attachment_instance = VehicleAttachment(vehicle=obj, file=file_instance)
         attachment_instance.save()
@@ -160,20 +159,12 @@ def user_question_embedding_creator(question: str):
     return response.data[0].embedding
 
 
-def answer_users_question(user_question, embeddings, snippets, gpt_model):
-    
-    try:
-        # Create an embedding for the user's question
-        user_question_embedding = user_question_embedding_creator(user_question)
-    except Exception as e:
-        # Handle any exception that occurred while using Embedding API.
-        return f"An error occurred while creating embedding: {str(e)}"
-        
+def answer_users_question(user_question, user_question_embedding, embeddings, snippets, gpt_model):
     
     # Calculate cosine similarities between the user's question embedding and the document embeddings
     cosine_similarities = []
     for embedding in embeddings:
-        cosine_similarities.append(dot(user_question_embedding,embedding))
+        cosine_similarities.append(dot(user_question_embedding, embedding))
 
     # Pair snippets with their respective cosine similarities and sort them by similarity
     scored_snippets = zip(snippets, cosine_similarities)
