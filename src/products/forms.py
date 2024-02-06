@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product, Vehicle, VehicleAttachment
+from .models import Product, Vehicle
 
 input_css_class = "form-control"
 

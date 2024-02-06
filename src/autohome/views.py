@@ -18,6 +18,7 @@ def home_view(request):
             extract_text_from_url_pdf(url, data['vehicle_handle'], obj)
         request.session['vehicle_id'] = vin
         request.session['vehicle_name'] = data['vehicle_model']
+        request.session['vehicle_handle'] = data['vehicle_handle']
         return redirect('/products/', data)
     context['form'] = form
     return render(request, "home.html", context)

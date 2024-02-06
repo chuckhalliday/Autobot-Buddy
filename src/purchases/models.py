@@ -11,3 +11,17 @@ class Purchase(models.Model):
     completed=models.BooleanField(default=False)
     stripe_price=models.IntegerField(default=0)
     timestamp=models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+class ChatLog(models.Model):
+    user=models.ForeignKey(settings.AUTH_USER_MODEL, default=1, on_delete=models.CASCADE)
+    vehicle=models.ForeignKey(Vehicle, null=True, on_delete=models.SET_NULL)
+    chat_model=models.ForeignKey(Product, null=True, on_delete=models.SET_NULL)
+    question=models.CharField(max_length=200)
+    answer=models.CharField(max_length=2000)
+    previous=models.ForeignKey('self', null=True, on_delete=models.SET_NULL)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
