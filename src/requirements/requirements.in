@@ -8,3 +8,4 @@ PyPDF2
 langchain
 openai
 python-dotenv
+gunicorn

@@ -12,7 +12,6 @@ from queries import create_embeddings, get_embeddings, user_question_embedding_c
 def chat_view(request):
     vin = request.session.get('vehicle_id')
     handle = request.session.get('vehicle_handle')
-    print(handle)
     vehicle = Vehicle.objects.filter(handle=vin).first()
     product = vehicle.product
     gpt_model = product.model
