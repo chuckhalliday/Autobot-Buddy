@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.conf import settings
+from autohome.storages.utils import generate_presigned_url
 
-base = settings.PROTECTED_MEDIA_ROOT
+#base = settings.PROTECTED_MEDIA_ROOT
 
 # Create your views here.
 from .models import Product, ChatLog
@@ -15,9 +16,13 @@ def chat_view(request):
     vehicle = Vehicle.objects.filter(handle=vin).first()
     product = vehicle.product
     gpt_model = product.model
+    #base = 'https://autoadvisorbucket.s3.us-west-2.amazonaws.com/protected'
 
-    create_embeddings(f'{base}/manuals/{handle}.txt', handle, vehicle)
-    embeddings, snippets = get_embeddings(f'{base}/embeddings/{handle}.json')
+    text_path = generate_presigned_url(f'manuals/{handle}.txt') # f'{base}/manuals/{handle}.txt'
+    json_path = generate_presigned_url(f'embeddings/{handle}.json') #f'{base}/embeddings/{handle}.txt'
+
+    create_embeddings(text_path, handle, vehicle)
+    embeddings, snippets = get_embeddings(json_path)
 
     context = {}
     answer = ''

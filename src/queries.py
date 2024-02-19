@@ -88,11 +88,16 @@ def extract_text_from_url_pdf(url: str, vehicle: str, obj: str):
         attachment_instance.save()
 
 
-def create_embeddings(file_path: str, vehicle: str, obj: str):
+def create_embeddings(url: str, vehicle: str, obj: str):
     file_name = f"{vehicle}.json"
     file_instance = File.objects.filter(name=file_name).first()
 
     if not file_instance:
+
+        # Read the content of the file specified by file_path
+        response = requests.get(url)
+        if response.status_code == 200:
+            file_text = response.text
     
         snippets = []
         #Initialize a CharacterTextSplitter with specified settings
@@ -101,9 +106,6 @@ def create_embeddings(file_path: str, vehicle: str, obj: str):
                                          chunk_overlap=CHUNK_OVERLAP,
                                          length_function=len)
 
-    # Read the content of the file specified by file_path
-        with open(file_path, "r", encoding="utf-8") as file:
-                file_text = file.read()
 
     # Split the text into snippets using the specified settings
         snippets = text_splitter.split_text(file_text)
@@ -137,12 +139,12 @@ def create_embeddings(file_path: str, vehicle: str, obj: str):
         attachment_instance.save()
 
 
-def get_embeddings(extracted_json_path: str):
+def get_embeddings(url: str):
     
     # Open the JSON file containing embeddings and snippets
-    with open(extracted_json_path,'r') as file:
-        # Load the JSON data into a Python dictionary
-        embedding_json = json.load(file)
+    response = requests.get(url)
+    if response.status_code == 200:
+        embedding_json = response.json()
         
     # Return the embeddings and snippets from the loaded JSON
     return embedding_json['embeddings'], embedding_json['snippets']

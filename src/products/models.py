@@ -2,9 +2,10 @@ from django.db import models
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from django.utils import timezone
+from autohome.storages.backends import ProtectedFileStorage
 
 PROTECTED_MEDIA_ROOT = settings.PROTECTED_MEDIA_ROOT
-protected_storage = FileSystemStorage(location=str(PROTECTED_MEDIA_ROOT))
+protected_storage = ProtectedFileStorage() # FileSystemStorage(location=str(PROTECTED_MEDIA_ROOT))
 
 # Create your models here.
 
