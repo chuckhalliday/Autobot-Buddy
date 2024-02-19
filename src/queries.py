@@ -22,17 +22,19 @@ def fetch_data(vin):
     
     try:
         response = requests.get(url)
+        
+        vehicle_object = response.json().get("Results", [])
+
         response.raise_for_status()  # Raise an HTTPError for bad responses
-        
-        data = response.json()
-        
-        vehicle_object = data.get("Results", [])
         
         if vehicle_object:
             year = vehicle_object[10].get("Value", "")
             make = vehicle_object[7].get("Value", "").lower()
-            trim = vehicle_object[13].get("Value", "").lower()
             model = vehicle_object[9].get("Value", "").lower()
+            if vehicle_object[13].get("Value") != None:
+                trim = vehicle_object[13].get("Value", "").lower()
+            else:
+                trim = "base"
             
             return {
                 "vehicle_model": f"{year} {make.capitalize()} {model.capitalize()} {trim.capitalize()}",
@@ -91,6 +93,7 @@ def extract_text_from_url_pdf(url: str, vehicle: str, obj: str):
 def create_embeddings(url: str, vehicle: str, obj: str):
     file_name = f"{vehicle}.json"
     file_instance = File.objects.filter(name=file_name).first()
+    print(file_instance)
 
     if not file_instance:
 
@@ -135,8 +138,9 @@ def create_embeddings(url: str, vehicle: str, obj: str):
 
     else:
         print(f"File '{file_name}' already exists. Skipping creation.")
-        attachment_instance = VehicleAttachment(vehicle=obj, file=file_instance)
-        attachment_instance.save()
+        if VehicleAttachment.objects.filter(vehicle=obj).count() < 2:
+            attachment_instance = VehicleAttachment(vehicle=obj, file=file_instance)
+            attachment_instance.save()
 
 
 def get_embeddings(url: str):
