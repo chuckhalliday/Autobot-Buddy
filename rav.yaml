@@ -20,4 +20,9 @@ scripts:
     - cp ./node_modules/flowbite/dist/flowbite.min.js ./src/static/vendor/flowbite/flowbite.min.js
   build: docker build -f Dockerfile -t autoadvisor .
   docker_dev: docker run --env-file .env -p 8001:8000 --rm --name autoadvisor-dev -it autoadvisor
-  docker_prod: docker run --env-file .env-prod -p 8002:8000 --rm --name autoadvisor-prod -it autoadvisor
+  docker_prod: docker run --env-file .env-prod.sh -p 8002:8000 --rm --name autoadvisor-prod -it autoadvisor
+  ecr_build: docker build -t 942499325186.dkr.ecr.us-west-2.amazonaws.com/autoadvisor:latest .
+  ecr_push: docker push 942499325186.dkr.ecr.us-west-2.amazonaws.com/autoadvisor:latest
+  plan: cd terraform && terraform plan
+  apply: cd terraform && terraform apply
+  destroy: cd terraform && terraform destroy
